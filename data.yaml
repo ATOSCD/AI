@@ -1,0 +1,20 @@
+path: C:/Users/user/Desktop/4-1/캡스톤/dataset_final
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: air conditioner
+  1: bed
+  2: book
+  3: chair
+  4: clock
+  5: door
+  6: fan
+  7: laptop
+  8: mug
+  9: thermometer
+  10: tv
+  11: window
+  12: lamp
+  13: tissue
