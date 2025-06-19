@@ -1,7 +1,8 @@
-path: C:/Users/user/Desktop/4-1/캡스톤/dataset_final
-train: images/train
-val: images/val
-test: images/test
+train: "C:/Users/user/Desktop/4-1/캡스톤/dataset_final/images/train"
+val: "C:/Users/user/Desktop/4-1/캡스톤/dataset_final/images/val"
+test: "C:/Users/user/Desktop/4-1/캡스톤/dataset_final/images/test"
+
+nc: 14
 
 names:
   0: air conditioner
