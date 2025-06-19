@@ -2,7 +2,7 @@
 
 이 저장소는 **데이터 전처리 초기 단계**, **중간 처리 과정**, **시행착오** 등을 포함한 **우리의 개발 히스토리**를 담고 있습니다.  
 그로 인해 **파일 구조가 다소 지저분**해 보일 수 있습니다.  
-실제 training에 사용된 파일들은 많지만, [**Ultralytics 리포지토리**](https://github.com/ultralytics/ultralytics)를 **클론하여 사용**했기 때문에 해당 코드들은 포함되어 있지 않습니다.
+실제 training에 사용된 파일들은 많지만, [**Ultralytics 리포지토리**](https://github.com/ultralytics/ultralytics)를 **클론하여 사용**했기 때문에 파일 구조가 매우 복잡하여 해당 코드들은 포함되어 있지 않습니다.
 
 ---
 
