@@ -1,65 +1,57 @@
 import os
 import json
 
-# ✅ 학습에 사용할 클래스 이름들 (이외는 무시)
+# ✅ YOLO 대상 클래스 (lamp는 무드등으로 추가)
 TARGET_CLASS_NAMES = [
     "air conditioner", "bed", "book", "chair",
-    "clock",  "door", "fan",
-    "laptop", "mug", 
-    "thermometer", "tv", "window"
+    "clock", "door", "fan",
+    "laptop", "mug",
+    "thermometer", "tv", "window",
+    "lamp"  # ← 무드등 클래스 추가
 ]
-name_to_yolo_id = {name: i for i, name in enumerate(TARGET_CLASS_NAMES)}
+LAMP_KOREAN_NAME = "무드등"
+LAMP_CLASS_ID = TARGET_CLASS_NAMES.index("lamp")
 
-# ✅ 단일 클래스 폴더 경로
-base_dir = r"C:\Users\user\Desktop\4-1\캡스톤\dataset_extra\window"
-label_dir = os.path.join(base_dir, "label")
-image_dir = os.path.join(base_dir, "image")
-output_label_dir = os.path.join(label_dir, "yolo_labels")
-os.makedirs(output_label_dir, exist_ok=True)
+# ✅ 경로 설정
+base_dir = r"C:\Users\user\Desktop\4-1\캡스톤\dataset_extra\mood_light\label"
+output_dir = os.path.join(base_dir, "yolo_labels")
+os.makedirs(output_dir, exist_ok=True)
 
 # ✅ JSON 파일 순회
-for file in os.listdir(label_dir):
+for file in os.listdir(base_dir):
     if not file.endswith(".json"):
         continue
 
-    json_path = os.path.join(label_dir, file)
+    json_path = os.path.join(base_dir, file)
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    # 이미지 정보
-    image_info = data["images"][0]
-    img_w, img_h = image_info["width"], image_info["height"]
-    img_id = int(image_info["id"])
-    img_name = os.path.splitext(image_info["file_name"])[0]
+    image_info = data.get("images", [])[0]
+    image_id = image_info["id"]
+    img_width = image_info["width"]
+    img_height = image_info["height"]
 
-    # 카테고리 매핑
-    category_id_to_name = {int(cat["id"]): cat["name"] for cat in data["categories"]}
+    annotations = data.get("annotations", [])
+    categories = {cat["class_id"]: cat["class_name"] for cat in data.get("categories", [])}
 
-    label_lines = []
-    for ann in data["annotations"]:
-        if int(ann["image_id"]) != img_id:
+    yolo_lines = []
+
+    for ann in annotations:
+        class_id = ann["category_id"]
+        class_name = categories.get(class_id)
+
+        if class_name != LAMP_KOREAN_NAME:
             continue
 
-        cat_id = int(ann["category_id"])
-        class_name = category_id_to_name.get(cat_id)
-
-        if class_name not in TARGET_CLASS_NAMES:
-            continue  # ❌ 무시할 클래스
-
-        class_id = name_to_yolo_id[class_name]
         x, y, w, h = ann["bbox"]
-        x_center = (x + w / 2) / img_w
-        y_center = (y + h / 2) / img_h
-        norm_w = w / img_w
-        norm_h = h / img_h
+        x_center = (x + w / 2) / img_width
+        y_center = (y + h / 2) / img_height
+        norm_w = w / img_width
+        norm_h = h / img_height
 
-        label_lines.append(f"{class_id} {x_center:.6f} {y_center:.6f} {norm_w:.6f} {norm_h:.6f}")
+        yolo_lines.append(f"{LAMP_CLASS_ID} {x_center:.6f} {y_center:.6f} {norm_w:.6f} {norm_h:.6f}")
 
-    # ✅ YOLO 포맷 .txt 저장
-    if label_lines:
-        out_path = os.path.join(output_label_dir, img_name + ".txt")
-        with open(out_path, "w") as f:
-            f.write("\n".join(label_lines))
-
-print("✅ YOLO .txt 변환 완료!")
-print(f"📁 저장 위치: {output_label_dir}")
+    if yolo_lines:
+        output_path = os.path.join(output_dir, f"{image_id}.txt")
+        with open(output_path, "w", encoding="utf-8") as out_f:
+            out_f.write("\n".join(yolo_lines))
